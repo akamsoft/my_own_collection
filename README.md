@@ -13,8 +13,19 @@ git clone https://github.com/ansible/ansible.git
 ```
 
 ### 3. Зайдите в директорию Ansible: cd ansible.
+**Ответ:** Выполнено.
+```bash
+cd ~/ansible
+```
+
 ### 4. Создайте виртуальное окружение: python3 -m venv venv.
+**Ответ:** Выполнено.
+```bash
+python3 -m venv venv
+```
+
 ### 5. Активируйте виртуальное окружение: . venv/bin/activate. Дальнейшие действия производятся только в виртуальном окружении.
+
 ### 6. Установите зависимости pip install -r requirements.txt.
 ### 7. Запустите настройку окружения . hacking/env-setup.
 ### 8. Если все шаги прошли успешно — выйдите из виртуального окружения deactivate.
