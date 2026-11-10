@@ -212,9 +212,9 @@ ansible-doc -j akamsoft.yandex_cloud_elk.my_own_module | python3 -m json.tool
     name: clickhouse-01
     zone: ru-central1-a
     cores: 2
-    memory: 4
-    disk_size: 20
-    image_family: rocky-linux-9
+    memory: 2
+    disk_size: 10
+    image_family: rocky-9-oslogin
     public_ip: true
     ssh_key: ~/.ssh/id_ed25519.pub
 
@@ -423,9 +423,9 @@ Playbook состоит из пяти play'ев.
 
 | Имя | cores | memory | disk_size | image_family | Группа |
 |---|---|---|---|---|---|
-| `clickhouse-01` | 2 | 4 | 20 | `rocky-linux-9` | `clickhouse` |
-| `vector-01` | 2 | 2 | 15 | `rocky-linux-9` | `vector` |
-| `lighthouse-01` | 2 | 2 | 10 | `rocky-linux-9` | `lighthouse` |
+| `clickhouse-01` | 2 | 4 | 20 | `rocky-9-oslogin` | `clickhouse` |
+| `vector-01` | 2 | 2 | 15 | `rocky-9-oslogin` | `vector` |
+| `lighthouse-01` | 2 | 2 | 10 | `rocky-9-oslogin` | `lighthouse` |
 
 **Переменные:**
 - `yc_folder_id` — из `YC_FOLDER_ID` (env)
@@ -505,23 +505,23 @@ ansible-playbook deploy_observability.yml
 
 ```bash
 # ClickHouse
-curl -s "http://<clickhouse-ip>:8123/?query=SELECT%20version()"
+curl -s "http://51.250.4.2:8123/?query=SELECT%20version()"
 # → 24.8.5.115
 
 # LightHouse
-curl -s "http://<lighthouse-ip>/" | grep -i "<title>"
+curl -s "http://84.201.158.244/" | grep -i "<title>"
 # → <title>LightHouse</title>
 
 # LightHouse → ClickHouse
-curl -s "http://<lighthouse-ip>/clickhouse/?query=SELECT%20version()"
+curl -s "http://84.201.158.244/clickhouse/?query=SELECT%20version()"
 # → 24.8.5.115
 
 # Vector active
-ssh yc-user@<vector-ip> "systemctl is-active vector"
+ssh yc-user@vector-01 "systemctl is-active vector"
 # → active
 
 # Vector шлёт данные в ClickHouse
-ssh yc-user@<clickhouse-ip> "clickhouse-client --query 'SELECT count() FROM default.vector_logs'"
+ssh yc-user@51.250.4.2 "clickhouse-client --query 'SELECT count() FROM default.vector_logs'"
 # → > 0
 ```
 
