@@ -2,17 +2,17 @@
 
 ## Подготовка к выполнению
 
-### 1. Создайте пустой публичный репозиторий в своём любом проекте: my_own_collection.
+1. Создайте пустой публичный репозиторий в своём любом проекте: my_own_collection.
 **Ответ:** Создан публичный репозиторий https://github.com/akamsoft/my_own_collection (пустой, без README).
 
-### 2. Скачайте репозиторий Ansible: git clone https://github.com/ansible/ansible.git по любому, удобному вам пути.
+2. Скачайте репозиторий Ansible: git clone https://github.com/ansible/ansible.git по любому, удобному вам пути.
 **Ответ:** Выполнено.
 ```bash
 cd ~
 git clone https://github.com/ansible/ansible.git
 ```
 
-### 3. Зайдите в директорию Ansible: cd ansible.
+3. Зайдите в директорию Ansible: cd ansible.
 **Ответ:** Выполнено.
 ```bash
 cd ~/ansible
