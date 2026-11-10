@@ -128,13 +128,13 @@ deactivate
 
 Дальнейшие действия — вне venv, с системным `ansible-core 2.19`.
 
-### Шаг 8. Инициализируйте коллекцию: `ansible-galaxy collection init my_own_namespace.yandex_cloud_elk`
+#### Шаг 8. Инициализируйте коллекцию: `ansible-galaxy collection init my_own_namespace.yandex_cloud_elk`
 **Ответ:** Коллекция инициализирована как `akamsoft.yandex_cloud_elk` (namespace `akamsoft` — мой GitHub-логин). Созданы `galaxy.yml`, `meta/runtime.yml` (`requires_ansible: ">=2.15.0"`), `plugins/`, `roles/`.
 
-### Шаг 9. Перенесите module в соответствующую директорию
+#### Шаг 9. Перенесите module в соответствующую директорию
 **Ответ:** Модуль находится в `plugins/modules/my_own_module.py` — стандартное место для модулей коллекции. Ansible автоматически подхватывает его по FQCN `akamsoft.yandex_cloud_elk.my_own_module`.
 
-### Шаг 10. Single task playbook → single task role, defaults всех параметров
+#### Шаг 10. Single task playbook → single task role, defaults всех параметров
 **Ответ:** Создана роль `roles/my_own_module/`:
 
 ```
@@ -143,4 +143,33 @@ roles/my_own_module/
 ├── meta/main.yml
 ├── tasks/main.yml
 └── README.md
+
+**`defaults/main.yml`** — все параметры модуля:
+```yaml
+my_own_module_path: /tmp/my_own_module_role_output.txt
+my_own_module_content: ""
+```
+
+**`tasks/main.yml`**:
+```yaml
+- name: Create file with content
+  akamsoft.yandex_cloud_elk.my_own_module:
+    path: "{{ my_own_module_path }}"
+    content: "{{ my_own_module_content }}"
+```
+
+#### Шаг 11. Создайте playbook для использования этой role
+**Ответ:** Создан `playbooks/role_playbook.yml`:
+```yaml
+- name: Test my_own_module role from collection
+  hosts: localhost
+  gather_facts: false
+  roles:
+    - role: akamsoft.yandex_cloud_elk.my_own_module
+      vars:
+        my_own_module_path: /tmp/my_own_module_role.txt
+        my_own_module_content: |
+          Hello from role in yandex_cloud_elk!
+          Line 2.
+```
 ```
