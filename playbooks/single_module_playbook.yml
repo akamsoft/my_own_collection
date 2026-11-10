@@ -7,5 +7,5 @@
       my_own_module:
         path: /tmp/my_own_module_standalone.txt
         content: |
-          Hello from standalone my_own_module!
+          Hello from standalone my_own_module!!
           Line 2.

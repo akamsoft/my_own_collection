@@ -16,21 +16,21 @@
       - name: clickhouse-01
         group: clickhouse
         cores: 2
-        memory: 4
-        disk_size: 20
-        image_family: rocky-linux-9
+        memory: 2
+        disk_size: 10
+        image_family: rocky-9-oslogin
       - name: vector-01
         group: vector
         cores: 2
         memory: 2
-        disk_size: 15
-        image_family: rocky-linux-9
+        disk_size: 10
+        image_family: rocky-9-oslogin
       - name: lighthouse-01
         group: lighthouse
         cores: 2
         memory: 2
         disk_size: 10
-        image_family: rocky-linux-9
+        image_family: rocky-9-oslogin
 
   tasks:
     - name: Create VMs in Yandex Cloud

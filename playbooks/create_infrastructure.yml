@@ -11,7 +11,7 @@
   tasks:
     - name: Create ClickHouse VM
       akamsoft.yandex_cloud_elk.yc_instance:
-        name: clickhouse-01
+        name: clickhouse-check-test
         zone: ru-central1-a
         folder_id: "{{ yc_folder_id }}"
         cores: 2
@@ -47,7 +47,9 @@
         cmd: yc compute instance list --format json
       register: yc_list
       changed_when: false
+      when: not ansible_check_mode
 
     - name: Print instance list
       ansible.builtin.debug:
-        msg: "{{ yc_list.stdout | from_json | map(attribute='name') | list }}"
+        msg: "{{ (yc_list.stdout | default('[]', true)) | from_json | map(attribute='name') | list }}"
+      when: not ansible_check_mode
