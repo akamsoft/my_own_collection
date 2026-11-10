@@ -172,4 +172,21 @@ my_own_module_content: ""
           Hello from role in yandex_cloud_elk!
           Line 2.
 ```
+
+**Проверка:** первый прогон `changed=1`, повторный `changed=0`.
+
+![Alt text](images/5.jpg)
+
+![Alt text](images/6.jpg)
+
+#### Шаг 12. Заполните всю документацию по collection, выложите в репозиторий, поставьте тег `1.0.0`
+**Ответ:** 
+- `README.md` содержит: описание коллекции, состав, требования, установку, модуль `my_own_module`, модуль `yc_instance`, роль `my_own_module`, playbook’и, идемпотентность, схему `deploy_observability.yml`, скриншоты, ссылки.
+- Репозиторий: https://github.com/akamsoft/my_own_collection
+- Тег `1.0.0` на финальном коммите: https://github.com/akamsoft/my_own_collection/releases/tag/1.0.0
+
+**Команды:**
+```bash
+git tag -a 1.0.0 -m "Release 1.0.0: yandex_cloud_elk"
+git push origin 1.0.0
 ```
