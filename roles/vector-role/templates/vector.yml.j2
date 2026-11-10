@@ -1,0 +1,69 @@
+data_dir: {{ vector_data_dir }}
+
+sources:
+  host_metrics:
+    type: host_metrics
+    collectors:
+      - cpu
+      - disk
+      - memory
+      - network
+
+  syslog:
+    type: file
+    include:
+      - /var/log/messages
+      - /var/log/secure
+
+transforms:
+  parse_syslog:
+    type: remap
+    inputs:
+      - syslog
+    source: |
+      . = parse_syslog!(.message)
+
+  host_metrics_to_log:
+    type: metric_to_log
+    inputs:
+      - host_metrics
+    metric_tag_values: "full"
+
+  host_metrics_normalize:
+    type: remap
+    inputs:
+      - host_metrics_to_log
+    source: |
+      # ISO 8601 timestamp с 'Z' → Unix timestamp (секунды)
+      .timestamp = to_unix_timestamp!(parse_timestamp!(.timestamp, "%+"))
+      # Извлекаем значения из вложенных counter/gauge
+      .counter_value = if exists(.counter.value) { .counter.value } else { 0.0 }
+      .gauge_value = if exists(.gauge.value) { .gauge.value } else { 0.0 }
+      del(.counter)
+      del(.gauge)
+
+sinks:
+  console:
+    type: console
+    inputs:
+      - parse_syslog
+      - host_metrics_normalize
+    encoding:
+      codec: json
+
+  clickhouse:
+    type: clickhouse
+    inputs:
+      - host_metrics_normalize
+    endpoint: "http://{{ vector_clickhouse_host }}:{{ vector_clickhouse_port }}"
+    table: "{{ vector_clickhouse_table }}"
+    database: "{{ vector_clickhouse_database }}"
+    auth:
+      strategy: basic
+      user: "{{ vector_clickhouse_user }}"
+      password: "{{ vector_clickhouse_password }}"
+    format: json_each_row
+    skip_unknown_fields: true
+    batch:
+      max_events: 1000
+      timeout_secs: 5

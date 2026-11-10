@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Alex
+  description: Install and configure LightHouse (VKCOM) with Nginx
+  company: akamsoft
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - lighthouse
+    - nginx
+    - clickhouse
+dependencies: []

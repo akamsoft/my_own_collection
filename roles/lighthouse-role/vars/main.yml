@@ -1,0 +1,5 @@
+---
+lighthouse_packages:
+  - nginx
+  - tar
+  - gzip

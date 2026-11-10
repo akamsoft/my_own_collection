@@ -4,12 +4,14 @@ version: 1.0.0
 readme: README.md
 authors:
   - alex (@akamsoft)
-description: Custom Ansible collection with my_own_module
+description: Yandex Cloud ELK collection with my_own_module and yc_instance
 license:
   - GPL-3.0-or-later
 tags:
   - files
   - tools
+  - cloud
+  - yandex
 dependencies: {}
 repository: https://github.com/akamsoft/my_own_collection
 documentation: https://github.com/akamsoft/my_own_collection/blob/main/README.md

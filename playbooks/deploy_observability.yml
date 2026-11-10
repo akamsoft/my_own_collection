@@ -1,0 +1,179 @@
+---
+# ============================================================
+# ЭТАП 1. Создание ВМ в Yandex Cloud и регистрация в inventory
+# ============================================================
+- name: Create infrastructure and register hosts
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    yc_folder_id: "{{ lookup('env', 'YC_FOLDER_ID') }}"
+    ssh_public_key: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+    ssh_private_key: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519"
+
+    instances:
+      - name: clickhouse-01
+        group: clickhouse
+        cores: 2
+        memory: 4
+        disk_size: 20
+        image_family: rocky-linux-9
+      - name: vector-01
+        group: vector
+        cores: 2
+        memory: 2
+        disk_size: 15
+        image_family: rocky-linux-9
+      - name: lighthouse-01
+        group: lighthouse
+        cores: 2
+        memory: 2
+        disk_size: 10
+        image_family: rocky-linux-9
+
+  tasks:
+    - name: Create VMs in Yandex Cloud
+      akamsoft.yandex_cloud_elk.yc_instance:
+        name: "{{ item.name }}"
+        zone: ru-central1-a
+        folder_id: "{{ yc_folder_id }}"
+        cores: "{{ item.cores }}"
+        memory: "{{ item.memory }}"
+        disk_size: "{{ item.disk_size }}"
+        image_family: "{{ item.image_family | default('ubuntu-2204-lts') }}"
+        public_ip: true
+        ssh_key: "{{ ssh_public_key }}"
+      loop: "{{ instances }}"
+      register: vm_results
+
+    - name: Add created VMs to in-memory inventory
+      ansible.builtin.add_host:
+        name: "{{ item.item.name }}"
+        groups: "{{ item.item.group }}"
+        ansible_host: "{{ item.ip }}"
+        ansible_user: yc-user
+        ansible_ssh_private_key_file: "{{ ssh_private_key }}"
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+      loop: "{{ vm_results.results }}"
+      when: item.ip is defined and item.ip | default('') | length > 0
+
+    - name: Wait for SSH on created VMs
+      ansible.builtin.wait_for:
+        host: "{{ item.ip }}"
+        port: 22
+        delay: 10
+        timeout: 300
+      loop: "{{ vm_results.results }}"
+      when: item.ip is defined and item.ip | default('') | length > 0
+
+# ============================================================
+# ЭТАП 2. ClickHouse
+# ============================================================
+- name: Install ClickHouse
+  hosts: clickhouse
+  become: true
+  gather_facts: true
+
+  vars:
+    clickhouse_version: "24.8.5.115"
+    clickhouse_repo: "https://packages.clickhouse.com/rpm/lts/"
+    clickhouse_repo_key: "https://packages.clickhouse.com/rpm/lts/repodata/repomd.xml.key"
+    clickhouse_listen_host:
+      - "0.0.0.0"
+
+  roles:
+    - role: clickhouse-role
+
+  post_tasks:
+    - name: Remove legacy listen.xml
+      ansible.builtin.file:
+        path: /etc/clickhouse-server/config.d/listen.xml
+        state: absent
+      notify: Restart ClickHouse
+
+    - name: Allow default user to connect from any IP
+      ansible.builtin.copy:
+        dest: /etc/clickhouse-server/users.d/zz-default-network.xml
+        content: |
+          <clickhouse>
+              <users>
+                  <default>
+                      <networks replace="replace">
+                          <ip>::/0</ip>
+                      </networks>
+                  </default>
+              </users>
+          </clickhouse>
+        owner: clickhouse
+        group: clickhouse
+        mode: '0640'
+      notify: Restart ClickHouse
+
+    - name: Create vector_logs table in ClickHouse
+      ansible.builtin.command:
+        cmd: >
+          clickhouse-client --query
+          "CREATE TABLE IF NOT EXISTS default.vector_logs (
+              name String,
+              timestamp DateTime,
+              tags Map(String, String),
+              kind String,
+              counter_value Float64,
+              gauge_value Float64
+          ) ENGINE = MergeTree()
+          ORDER BY timestamp"
+      changed_when: false
+
+  handlers:
+    - name: Restart ClickHouse
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+
+# ============================================================
+# ЭТАП 3. Vector
+# ============================================================
+- name: Install Vector
+  hosts: vector
+  become: true
+  gather_facts: true
+
+  vars:
+    vector_clickhouse_host: "{{ hostvars[groups['clickhouse'][0]]['ansible_host'] }}"
+    vector_clickhouse_port: 8123
+    vector_clickhouse_database: "default"
+    vector_clickhouse_table: "vector_logs"
+    vector_clickhouse_user: "default"
+    vector_clickhouse_password: ""
+
+  roles:
+    - role: vector-role
+
+# ============================================================
+# ЭТАП 4. LightHouse
+# ============================================================
+- name: Install LightHouse
+  hosts: lighthouse
+  become: true
+  gather_facts: true
+
+  vars:
+    clickhouse_host: "{{ hostvars[groups['clickhouse'][0]]['ansible_host'] }}"
+    clickhouse_port: 8123
+
+  roles:
+    - role: lighthouse-role
+
+# ============================================================
+# ЭТАП 5. Вывод эндпоинтов
+# ============================================================
+- name: Show service endpoints
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Print service URLs
+      ansible.builtin.debug:
+        msg:
+          - "ClickHouse HTTP:  http://{{ hostvars[groups['clickhouse'][0]]['ansible_host'] }}:8123"
+          - "LightHouse:       http://{{ hostvars[groups['lighthouse'][0]]['ansible_host'] }}/"

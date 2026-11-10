@@ -1,0 +1,19 @@
+---
+- name: Delete Observability infrastructure from Yandex Cloud
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    yc_folder_id: "{{ lookup('env', 'YC_FOLDER_ID') }}"
+
+  tasks:
+    - name: Delete VMs
+      akamsoft.yandex_cloud_elk.yc_instance:
+        name: "{{ item }}"
+        state: absent
+        folder_id: "{{ yc_folder_id }}"
+      loop:
+        - clickhouse-01
+        - vector-01
+        - lighthouse-01

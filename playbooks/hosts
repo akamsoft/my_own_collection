@@ -1,0 +1,8 @@
+[local]
+localhost ansible_connection=local
+
+[clickhouse]
+
+[vector]
+
+[lighthouse]

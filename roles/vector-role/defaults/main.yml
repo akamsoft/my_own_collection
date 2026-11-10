@@ -1,0 +1,16 @@
+---
+vector_version: "0.61.0"
+vector_archive: "vector-{{ vector_version }}-x86_64-unknown-linux-gnu.tar.gz"
+vector_download_url: "https://github.com/vectordotdev/vector/releases/download/v{{ vector_version }}/{{ vector_archive }}"
+vector_install_dir: "/opt/vector"
+vector_bin: "{{ vector_install_dir }}/vector-x86_64-unknown-linux-gnu/bin/vector"
+vector_config_dir: "/etc/vector"
+vector_data_dir: "/var/lib/vector"
+
+# ClickHouse sink parameters
+vector_clickhouse_host: "127.0.0.1"
+vector_clickhouse_port: 8123
+vector_clickhouse_database: "default"
+vector_clickhouse_table: "vector_logs"
+vector_clickhouse_user: "default"
+vector_clickhouse_password: ""

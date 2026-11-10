@@ -1,0 +1,70 @@
+---
+- name: Install Nginx
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+  tags: lighthouse_install
+
+- name: Create lighthouse directory
+  ansible.builtin.file:
+    path: "{{ lighthouse_dest }}"
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '0755'
+  tags: lighthouse_install
+
+- name: Download LightHouse archive
+  ansible.builtin.get_url:
+    url: "{{ lighthouse_archive_url }}"
+    dest: "/tmp/lighthouse.tar.gz"
+    mode: '0644'
+  tags: lighthouse_install
+
+- name: Extract LightHouse archive
+  ansible.builtin.unarchive:
+    src: "/tmp/lighthouse.tar.gz"
+    dest: "{{ lighthouse_dest }}"
+    remote_src: true
+    extra_opts:
+      - --strip-components=1
+    owner: nginx
+    group: nginx
+  tags: lighthouse_install
+
+- name: Move default nginx server to port 8080 to avoid conflict
+  ansible.builtin.lineinfile:
+    path: /etc/nginx/nginx.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+  loop:
+    - regexp: '^\s+listen\s+80;'
+      line: '        listen 8080;'
+    - regexp: '^\s+listen\s+\[::\]:80;'
+      line: '        listen [::]:8080;'
+  notify: Restart nginx
+  tags: lighthouse_configure
+
+- name: Allow nginx to make outbound connections (SELinux)
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true
+  tags: lighthouse_configure
+
+- name: Deploy Nginx configuration for LightHouse
+  ansible.builtin.template:
+    src: nginx-lighthouse.conf.j2
+    dest: /etc/nginx/conf.d/lighthouse.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart nginx
+  tags: lighthouse_configure
+
+- name: Ensure Nginx is started and enabled
+  ansible.builtin.systemd:
+    name: nginx
+    state: started
+    enabled: true
+  tags: lighthouse_configure

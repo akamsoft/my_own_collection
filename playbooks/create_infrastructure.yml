@@ -1,0 +1,53 @@
+---
+- name: Create Observability infrastructure in Yandex Cloud
+  hosts: localhost
+  gather_facts: false
+  connection: local
+
+  vars:
+    yc_folder_id: "{{ lookup('env', 'YC_FOLDER_ID') }}"
+    ssh_public_key: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+
+  tasks:
+    - name: Create ClickHouse VM
+      akamsoft.yandex_cloud_elk.yc_instance:
+        name: clickhouse-01
+        zone: ru-central1-a
+        folder_id: "{{ yc_folder_id }}"
+        cores: 2
+        memory: 2
+        disk_size: 10
+        public_ip: true
+        ssh_key: "{{ ssh_public_key }}"
+
+    - name: Create Vector VM
+      akamsoft.yandex_cloud_elk.yc_instance:
+        name: vector-01
+        zone: ru-central1-a
+        folder_id: "{{ yc_folder_id }}"
+        cores: 2
+        memory: 2
+        disk_size: 10
+        public_ip: true
+        ssh_key: "{{ ssh_public_key }}"
+
+    - name: Create LightHouse VM
+      akamsoft.yandex_cloud_elk.yc_instance:
+        name: lighthouse-01
+        zone: ru-central1-a
+        folder_id: "{{ yc_folder_id }}"
+        cores: 2
+        memory: 2
+        disk_size: 10
+        public_ip: true
+        ssh_key: "{{ ssh_public_key }}"
+
+    - name: Show created instances
+      ansible.builtin.command:
+        cmd: yc compute instance list --format json
+      register: yc_list
+      changed_when: false
+
+    - name: Print instance list
+      ansible.builtin.debug:
+        msg: "{{ yc_list.stdout | from_json | map(attribute='name') | list }}"

@@ -1,0 +1,16 @@
+---
+roles:
+  - name: vector-role
+    src: https://github.com/akamsoft/vector-role.git
+    scm: git
+    version: "main"
+
+  - name: lighthouse-role
+    src: https://github.com/akamsoft/lighthouse-role.git
+    scm: git
+    version: "main"
+
+  - name: clickhouse-role
+    src: https://github.com/AlexeySetevoi/ansible-clickhouse.git
+    scm: git
+    version: "1.13"

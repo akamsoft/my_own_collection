@@ -1,0 +1,21 @@
+server {
+    listen {{ lighthouse_nginx_port }};
+    server_name _;
+
+    root {{ lighthouse_dest }};
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    # Проксирование запросов LightHouse к ClickHouse HTTP-интерфейсу.
+    # Адрес берётся из переменной clickhouse_host (задаётся в плейбуке).
+    location /clickhouse/ {
+        proxy_pass http://{{ clickhouse_host }}:{{ clickhouse_port }}/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_read_timeout 300s;
+    }
+}
