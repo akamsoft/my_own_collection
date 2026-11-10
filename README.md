@@ -125,3 +125,22 @@ localhost : ok=1  changed=0  unreachable=0  failed=0  skipped=0
 ```bash
 deactivate
 ```
+
+Дальнейшие действия — вне venv, с системным `ansible-core 2.19`.
+
+### Шаг 8. Инициализируйте коллекцию: `ansible-galaxy collection init my_own_namespace.yandex_cloud_elk`
+**Ответ:** Коллекция инициализирована как `akamsoft.yandex_cloud_elk` (namespace `akamsoft` — мой GitHub-логин). Созданы `galaxy.yml`, `meta/runtime.yml` (`requires_ansible: ">=2.15.0"`), `plugins/`, `roles/`.
+
+### Шаг 9. Перенесите module в соответствующую директорию
+**Ответ:** Модуль находится в `plugins/modules/my_own_module.py` — стандартное место для модулей коллекции. Ansible автоматически подхватывает его по FQCN `akamsoft.yandex_cloud_elk.my_own_module`.
+
+### Шаг 10. Single task playbook → single task role, defaults всех параметров
+**Ответ:** Создана роль `roles/my_own_module/`:
+
+```
+roles/my_own_module/
+├── defaults/main.yml
+├── meta/main.yml
+├── tasks/main.yml
+└── README.md
+```
