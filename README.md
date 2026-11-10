@@ -118,7 +118,7 @@ PLAY RECAP
 localhost : ok=1  changed=0  unreachable=0  failed=0  skipped=0
 ```
 
-![Alt text](images/images/06-idempotent.png)
+![Alt text](images/06-idempotent.png)
 
 #### 7. Выйдите из виртуального окружения
 **Ответ:** Выполнено.
