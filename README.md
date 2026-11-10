@@ -6,6 +6,12 @@
 **Ответ:** Создан публичный репозиторий https://github.com/akamsoft/my_own_collection (пустой, без README).
 
 ### 2. Скачайте репозиторий Ansible: git clone https://github.com/ansible/ansible.git по любому, удобному вам пути.
+**Ответ:** Выполнено.
+```bash
+cd ~
+git clone https://github.com/ansible/ansible.git
+```
+
 ### 3. Зайдите в директорию Ansible: cd ansible.
 ### 4. Создайте виртуальное окружение: python3 -m venv venv.
 ### 5. Активируйте виртуальное окружение: . venv/bin/activate. Дальнейшие действия производятся только в виртуальном окружении.
