@@ -1,0 +1,4 @@
+---
+# Параметры модуля my_own_module
+my_own_module_path: /tmp/my_own_module_role_output.txt
+my_own_module_content: ""

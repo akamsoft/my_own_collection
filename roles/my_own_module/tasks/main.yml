@@ -1,0 +1,5 @@
+---
+- name: Create file with content
+  akamsoft.yandex_cloud_elk.my_own_module:
+    path: "{{ my_own_module_path }}"
+    content: "{{ my_own_module_content }}"

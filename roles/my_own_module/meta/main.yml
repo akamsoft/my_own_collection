@@ -1,0 +1,10 @@
+---
+galaxy_info:
+  role_name: my_own_module
+  author: alex (@akamsoft)
+  description: Role wrapper around the my_own_module module
+  license: GPL-3.0-or-later
+  min_ansible_version: "2.15"
+  galaxy_tags:
+    - files
+dependencies: []
