@@ -85,7 +85,7 @@ PLAY RECAP
 localhost : ok=1  changed=1  unreachable=0  failed=0  skipped=0
 ```
 
-![Alt text](images/04-local-run.png)
+![Alt text](images/3.jpg)
 
 #### 5. Напишите single task playbook и используйте module
 **Ответ:** Создан `playbooks/single_module_playbook.yml`:
@@ -118,7 +118,7 @@ PLAY RECAP
 localhost : ok=1  changed=0  unreachable=0  failed=0  skipped=0
 ```
 
-![Alt text](images/06-idempotent.png)
+![Alt text](images/4.jpg)
 
 #### 7. Выйдите из виртуального окружения
 **Ответ:** Выполнено.
