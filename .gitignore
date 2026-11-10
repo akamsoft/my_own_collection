@@ -1,0 +1,6 @@
+*.tar.gz
+__pycache__/
+*.pyc
+*.retry
+venv/
+.venv/

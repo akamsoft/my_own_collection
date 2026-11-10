@@ -1,0 +1,11 @@
+---
+- name: Test my_own_module from collection
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Create file with content
+      akamsoft.my_own_collection.my_own_module:
+        path: /tmp/my_own_module_collection.txt
+        content: |
+          Hello from my_own_collection!
+          Line 2.

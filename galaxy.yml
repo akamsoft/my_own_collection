@@ -1,0 +1,17 @@
+namespace: akamsoft
+name: my_own_collection
+version: 1.0.0
+readme: README.md
+authors:
+  - alex (@akamsoft)
+description: Custom Ansible collection with my_own_module
+license:
+  - GPL-3.0-or-later
+tags:
+  - files
+  - tools
+dependencies: {}
+repository: https://github.com/akamsoft/my_own_collection
+documentation: https://github.com/akamsoft/my_own_collection/blob/main/README.md
+homepage: https://github.com/akamsoft/my_own_collection
+issues: https://github.com/akamsoft/my_own_collection/issues
